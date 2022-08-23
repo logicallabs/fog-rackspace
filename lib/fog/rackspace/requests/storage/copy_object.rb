@@ -15,7 +15,15 @@ module Fog
         # @raise [Fog::Storage::Rackspace::InternalServerError] - HTTP 500
         # @raise [Fog::Storage::Rackspace::ServiceError]
         def copy_object(source_container_name, source_object_name, target_container_name, target_object_name, options={})
-          headers = { 'X-Copy-From' => "/#{source_container_name}/#{source_object_name}" }.merge(options)
+          source_meta_data = request({
+            :expects  => 200,
+            :headers => {},
+            :method => 'HEAD',
+            :path     => "#{Fog::Rackspace.escape(source_container_name)}/#{Fog::Rackspace.escape(source_object_name)}"
+          })
+          headers = { 'X-Copy-From' => "/#{source_container_name}/#{source_object_name}" }.
+                    merge(options).
+                    merge({ "Content-Type" => source_meta_data.headers['Content-Type'] })
           request({
             :expects  => 201,
             :headers  => headers,
