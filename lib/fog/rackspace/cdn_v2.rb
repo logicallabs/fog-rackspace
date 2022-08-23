@@ -123,3 +123,5 @@ module Fog
     end
   end
 end
+
+Fog::Rackspace::CDNV2 = Fog::CDN::RackspaceV2
